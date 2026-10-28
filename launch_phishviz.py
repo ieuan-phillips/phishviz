@@ -31,7 +31,9 @@ def wait_for_server(host: str, port: int, timeout: float = 20.0) -> bool:
 
 
 def main() -> None:
+    # Ensure the local SQLite database directory exists.
     project_root = Path(__file__).resolve().parent
+    (project_root / "workspace").mkdir(parents=True, exist_ok=True)
     web_dir = project_root / "web"
     manage_py = web_dir / "manage.py"
 
