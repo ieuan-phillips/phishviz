@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}PhishViz{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --panel: #ffffff;
+            --border: #d7deea;
+            --text: #1e293b;
+            --muted: #64748b;
+            --brand-dark: #23154a;
+            --brand-primary: #6d35d9;
+            --brand-primary-dark: #5728b3;
+            --brand-accent: #27c3f3;
+            --ok: #166534;
+            --bad: #b42318;
+            --shadow: 0 6px 18px rgba(35, 21, 74, 0.08);
+            --radius: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        a {
+            color: var(--brand-primary);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .site-header {
+            background: linear-gradient(135deg, var(--brand-dark), var(--brand-primary));
+            color: white;
+            padding: 18px 28px;
+            box-shadow: var(--shadow);
+        }
+
+        .site-header-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .brand-block h1 {
+            margin: 0;
+            font-size: 28px;
+            line-height: 1.1;
+        }
+
+        .brand-block p {
+            margin: 6px 0 0 0;
+            color: rgba(255,255,255,0.85);
+            font-size: 14px;
+        }
+
+        .header-links a {
+            color: white;
+            margin-left: 16px;
+            font-size: 14px;
+        }
+
+        .page {
+            max-width: 1400px;
+            margin: 24px auto;
+            padding: 0 20px 32px 20px;
+        }
+
+        .page-title {
+            margin: 0 0 8px 0;
+            font-size: 24px;
+        }
+
+        .page-subtitle {
+            margin: 0 0 18px 0;
+            color: var(--muted);
+        }
+
+        .nav-links {
+            margin-bottom: 18px;
+        }
+
+        .nav-links a {
+            margin-right: 14px;
+            font-weight: bold;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px;
+            margin-bottom: 22px;
+            box-shadow: var(--shadow);
+        }
+
+        .panel h2,
+        .panel h3 {
+            margin-top: 0;
+            color: var(--brand-dark);
+        }
+
+        .summary-list,
+        .plain-list {
+            padding-left: 20px;
+            margin: 0;
+        }
+
+        .summary-list li,
+        .plain-list li {
+            margin-bottom: 8px;
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .status-ok {
+            color: var(--ok);
+            font-weight: bold;
+        }
+
+        .status-bad {
+            color: var(--bad);
+            font-weight: bold;
+        }
+
+        .btn,
+        button,
+        input[type="submit"] {
+            display: inline-block;
+            background: var(--brand-primary);
+            color: white;
+            border: 0;
+            border-radius: 10px;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn:hover,
+        button:hover,
+        input[type="submit"]:hover {
+            background: var(--brand-primary-dark);
+            text-decoration: none;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--brand-primary);
+            border: 1px solid var(--brand-primary);
+        }
+
+        .btn-secondary:hover {
+            background: #f4efff;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .card h3 {
+            margin: 0 0 8px 0;
+            font-size: 15px;
+            color: var(--muted);
+        }
+
+        .card p {
+            margin: 0;
+            font-size: 34px;
+            font-weight: bold;
+            color: var(--brand-dark);
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: white;
+        }
+
+        .metrics-table {
+            border-collapse: collapse;
+            min-width: 1000px;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .metrics-table th,
+        .metrics-table td {
+            border: 1px solid var(--border);
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+            white-space: nowrap;
+        }
+
+        .metrics-table th {
+            background: #eef2ff;
+            color: var(--brand-dark);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 16px;
+        }
+
+        .chart-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            background: white;
+        }
+
+        .chart-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            background: white;
+        }
+
+        .chart-meta {
+            margin-top: 10px;
+        }
+
+        .chart-meta strong {
+            display: block;
+            margin-bottom: 8px;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            font-size: 13px;
+            line-height: 1.35;
+        }
+
+        .chart-meta a {
+            margin-right: 12px;
+        }
+
+        .filter-form {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .filter-group label {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .filter-group select,
+        .filter-group input[type="text"],
+        .filter-group input[type="file"],
+        textarea {
+            min-width: 220px;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: white;
+        }
+
+        form p {
+            margin-bottom: 14px;
+        }
+
+        .artifact-columns h3 {
+            margin-bottom: 10px;
+        }
+
+        .artifact-columns {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .artifact-columns li,
+        .plain-list li {
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            word-break: break-all;
+            white-space: pre-wrap;
+            font-size: 12px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .badge-status-completed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-status-failed {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-status-queued,
+        .badge-status-running,
+        .badge-status-validated {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .badge-mode-upload {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .badge-mode-reproduce {
+            background: #cffafe;
+            color: #155e75;
+        }
+
+        @media (max-width: 800px) {
+            .site-header-inner {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <div class="site-header-inner">
+            <div class="brand-block">
+                <h1>PhishViz</h1>
+                <p>Local-first phishing simulation analytics and reporting workbench</p>
+            </div>
+            <div class="header-links">
+                <a href="{% url 'runs:list' %}">Runs</a>
+                {% block header_links %}{% endblock %}
+            </div>
+        </div>
+    </header>
+
+    <main class="page">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

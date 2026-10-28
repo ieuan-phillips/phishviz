@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard {{ run.run_id }}{% endblock %}
+
+{% block content %}
+    <div class="topbar" style="margin-bottom: 18px;">
+        <div>
+            <h1 class="page-title" style="margin-bottom: 6px;">Dashboard for run {{ run.run_id }}</h1>
+            <div class="page-subtitle">
+                Status: {{ run.status }} |
+                Accepted: {{ run.accepted_files_count }} |
+                Rejected: {{ run.rejected_files_count }} |
+                Warnings: {{ run.warnings_count }}
+            </div>
+        </div>
+        <div>
+            <a href="{% url 'runs:detail' run.run_id %}">Back to run detail</a>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Filters</h2>
+        <form method="get" class="filter-form">
+            <div class="filter-group">
+                <label for="technique">Technique</label>
+                <select name="technique" id="technique">
+                    <option value="">All techniques</option>
+                    {% for option in dashboard.technique_options %}
+                        <option value="{{ option }}" {% if option == dashboard.selected_technique %}selected{% endif %}>
+                            {{ option }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="period">Campaign period</label>
+                <select name="period" id="period">
+                    <option value="">All periods</option>
+                    {% for option in dashboard.period_options %}
+                        <option value="{{ option }}" {% if option == dashboard.selected_period %}selected{% endif %}>
+                            {{ option }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <button type="submit">Apply filters</button>
+                <a class="btn btn-secondary" href="{% url 'dashboard:run_dashboard' run.run_id %}">Clear filters</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="cards">
+        {% for card in dashboard.summary_cards %}
+            <div class="card">
+                <h3>{{ card.label }}</h3>
+                <p>{{ card.value }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="panel quick-links">
+        <h2>Quick downloads</h2>
+        {% if report_artifacts %}
+            <ul class="plain-list">
+                {% for artifact in report_artifacts %}
+                    <li>
+                        {{ artifact.name }}
+                        (<a href="{% url 'runs:artifact_download' run.run_id artifact.id %}">download</a>)
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="muted">No report or provenance files recorded for this run.</p>
+        {% endif %}
+    </div>
+
+    <div class="panel">
+        <h2>Chart gallery</h2>
+        {% if chart_artifacts %}
+            <div class="chart-grid">
+                {% for artifact in chart_artifacts %}
+                    <div class="chart-card">
+                        <img src="{% url 'runs:artifact_view' run.run_id artifact.id %}" alt="{{ artifact.name }}">
+                        <div class="chart-meta">
+                            <strong title="{{ artifact.name }}">{{ artifact.name }}</strong>
+                            <a href="{% url 'runs:artifact_view' run.run_id artifact.id %}" target="_blank">Open</a>
+                            <a href="{% url 'runs:artifact_download' run.run_id artifact.id %}">Download</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="muted">No chart artefacts recorded for this run.</p>
+        {% endif %}
+    </div>
+
+    <div class="panel">
+        <h2>Campaign metrics</h2>
+        {% if dashboard.campaign_table_html %}
+            <div class="table-wrap">
+                {{ dashboard.campaign_table_html|safe }}
+            </div>
+        {% else %}
+            <p class="muted">No FR4 campaign metrics found for this filter selection.</p>
+        {% endif %}
+    </div>
+
+    <div class="panel">
+        <h2>Cohort comparison</h2>
+        {% if dashboard.cohort_comparison_html %}
+            <div class="table-wrap">
+                {{ dashboard.cohort_comparison_html|safe }}
+            </div>
+        {% else %}
+            <p class="muted">No FR5 cohort comparison metrics found for this filter selection.</p>
+        {% endif %}
+    </div>
+
+    <div class="panel">
+        <h2>Cohort trend</h2>
+        {% if dashboard.cohort_trend_html %}
+            <div class="table-wrap">
+                {{ dashboard.cohort_trend_html|safe }}
+            </div>
+        {% else %}
+            <p class="muted">No FR5 cohort trend metrics found for this filter selection.</p>
+        {% endif %}
+    </div>
+
+    <div class="panel">
+        <h2>Metric table downloads</h2>
+        {% if metric_artifacts %}
+            <ul class="plain-list">
+                {% for artifact in metric_artifacts %}
+                    <li>
+                        {{ artifact.name }} |
+                        <a href="{% url 'runs:artifact_download' run.run_id artifact.id %}">Download</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="muted">No metric table artefacts recorded for this run.</p>
+        {% endif %}
+    </div>
+{% endblock %}

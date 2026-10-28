@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Create PhishViz Run{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">Create new run</h1>
+    <p class="page-subtitle">Upload AST CSV exports and execute the full PhishViz pipeline from the browser.</p>
+
+    <p class="nav-links">
+        <a href="{% url 'runs:list' %}">Back to runs</a>
+    </p>
+
+    <div class="panel">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Run PhishViz</button>
+        </form>
+    </div>
+{% endblock %}

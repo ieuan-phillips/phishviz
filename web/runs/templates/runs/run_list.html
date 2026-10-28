@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}PhishViz Runs{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">Analysis runs</h1>
+    <p class="page-subtitle">Create, review, verify, and reproduce PhishViz runs from one place.</p>
+
+    <p class="nav-links">
+        <a class="btn" href="{% url 'runs:create' %}">Create new run</a>
+    </p>
+
+    <div class="panel">
+        {% if runs %}
+            <div class="table-wrap">
+                <table class="metrics-table">
+                    <thead>
+                        <tr>
+                            <th>Run ID</th>
+                            <th>Status</th>
+                            <th>Source mode</th>
+                            <th>Created</th>
+                            <th>Cohort mode</th>
+                            <th>Accepted</th>
+                            <th>Rejected</th>
+                            <th>Warnings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for run in runs %}
+                            <tr>
+                                <td><a href="{% url 'runs:detail' run.run_id %}">{{ run.run_id }}</a></td>
+                                <td><span class="badge badge-status-{{ run.status }}">{{ run.status }}</span></td>
+                                <td><span class="badge badge-mode-{{ run.source_mode }}">{{ run.source_mode }}</span></td>
+                                <td>{{ run.created_at }}</td>
+                                <td>{{ run.cohort_enabled }}</td>
+                                <td>{{ run.accepted_files_count }}</td>
+                                <td>{{ run.rejected_files_count }}</td>
+                                <td>{{ run.warnings_count }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="muted">No runs recorded yet.</p>
+        {% endif %}
+    </div>
+{% endblock %}

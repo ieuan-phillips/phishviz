@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Run {{ run.run_id }}{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">Run {{ run.run_id }}</h1>
+    <p class="page-subtitle">Review execution status, inputs, artefacts, and next actions for this run.</p>
+
+    <p class="nav-links">
+        <a href="{% url 'runs:list' %}">Back to runs</a>
+        <a href="{% url 'dashboard:run_dashboard' run.run_id %}">Open dashboard</a>
+        <a href="{% url 'runs:verify' run.run_id %}">Verify run</a>
+    </p>
+
+    <div class="grid-2">
+        <div class="panel">
+            <h2>Run summary</h2>
+            <ul class="summary-list">
+                <li>
+                    Status:
+                    <span class="badge badge-status-{{ run.status }}">{{ run.status }}</span>
+                </li>
+                <li>
+                    Source mode:
+                    <span class="badge badge-mode-{{ run.source_mode }}">{{ run.source_mode }}</span>
+                </li>
+                <li>Label: {{ run.label|default:"-" }}</li>
+                <li>Created: {{ run.created_at }}</li>
+                <li>Finished: {{ run.finished_at|default:"-" }}</li>
+                <li>Config dir: {{ run.config_dir }}</li>
+                <li>Output dir: {{ run.out_dir }}</li>
+                <li>Run config: {{ run.run_config_path|default:"-" }}</li>
+                <li>Cohort enabled: {{ run.cohort_enabled }}</li>
+                <li>Accepted files: {{ run.accepted_files_count }}</li>
+                <li>Rejected files: {{ run.rejected_files_count }}</li>
+                <li>Warnings: {{ run.warnings_count }}</li>
+                <li>Normalised rows: {{ run.normalised_rows }}</li>
+                <li>Normalised cols: {{ run.normalised_cols }}</li>
+            </ul>
+
+            {% if run.error_message %}
+                <h3>Error</h3>
+                <p class="status-bad">{{ run.error_message }}</p>
+            {% endif %}
+        </div>
+
+        <div class="panel">
+            <h2>Inputs</h2>
+            {% if run.inputs.all %}
+                <ul class="plain-list">
+                    {% for item in run.inputs.all %}
+                        <li>
+                            <strong>{{ item.original_name }}</strong><br>
+                            {{ item.size_bytes }} bytes |
+                            accepted={{ item.accepted }} |
+                            variant={{ item.detected_variant }}<br>
+                            {{ item.message }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="muted">No inputs recorded.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Artifacts</h2>
+        {% if artifact_sections %}
+            <div class="artifact-columns">
+                {% for section_title, artifacts in artifact_sections %}
+                    <div>
+                        <h3>{{ section_title }}</h3>
+                        <ul class="plain-list">
+                            {% for artifact in artifacts %}
+                                <li>
+                                    {{ artifact.name }} |
+                                    {{ artifact.artifact_type }} |
+                                    {{ artifact.size_bytes }} bytes |
+                                    <a href="{% url 'runs:artifact_download' run.run_id artifact.id %}">Download</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="muted">No artifacts recorded.</p>
+        {% endif %}
+    </div>
+{% endblock %}

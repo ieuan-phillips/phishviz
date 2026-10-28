@@ -1,0 +1,79 @@
+# PhishViz - conservative .gitignore for a NEW, CLEAN repository
+# Rename this file to .gitignore and put it in the repository root.
+# IMPORTANT: .gitignore does not remove files already committed to Git.
+# Do not copy raw data, secrets, or your old .git directory into the new repo.
+
+# Python environments, caches and local tooling
+.venv/
+.venv_broken/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+build/
+dist/
+.vscode/
+.idea/
+
+# Secrets, personal settings and local deployment files
+.env
+.env.*
+!.env.example
+.deployment
+*.pem
+*.key
+*.p12
+*.pfx
+*.log
+
+# Sensitive inputs, uploaded files, generated results, and local state
+ast_exports/
+workspace/
+out/
+config/
+assets/
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-*
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.pdf
+
+# Local backups and archives
+etl/backups/
+*.7z
+*.zip
+*.tar
+*.gz
+*.bak
+*.backup
+
+# Operating-system temporary files
+Thumbs.db
+.DS_Store
+
+
+# Reviewed synthetic demonstration data
+!examples/
+!examples/P2026 - January - P1 - SyntheticDemo - Results.csv
+
+# Approved public cohort configuration
+!config/
+!config/cohorts.json
+
+# Approved public report asset
+!assets/
+!assets/report_background.png
+
+# Later, you may selectively add reviewed, fabricated demo data/assets
+# by adding explicit exception patterns; never force-add actual exports.
+# Review the entire staged file list and content before EVERY commit.

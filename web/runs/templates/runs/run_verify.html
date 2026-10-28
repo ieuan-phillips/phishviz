@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Verify run {{ run.run_id }}{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">Verify run {{ run.run_id }}</h1>
+    <p class="page-subtitle">Check whether the current referenced inputs still match the saved provenance record.</p>
+
+    <p class="nav-links">
+        <a href="{% url 'runs:detail' run.run_id %}">Back to run detail</a>
+        <a href="{% url 'dashboard:run_dashboard' run.run_id %}">Open dashboard</a>
+    </p>
+
+    <div class="panel">
+        <h2>Verification result</h2>
+
+        {% if verification.run_config_exists %}
+            {% if verification.is_valid %}
+                <p class="status-ok">Verification passed: current inputs match the saved run configuration.</p>
+            {% else %}
+                <p class="status-bad">Verification failed: one or more issues were detected against the saved run configuration.</p>
+            {% endif %}
+        {% else %}
+            <p class="status-bad">Verification could not run because <code>run_config.json</code> was not found.</p>
+        {% endif %}
+
+        {% if reproduce_error %}
+            <p class="status-bad">{{ reproduce_error }}</p>
+        {% endif %}
+
+        {% if verification.run_config_exists and verification.is_valid %}
+            <form method="post" action="{% url 'runs:reproduce' run.run_id %}">
+                {% csrf_token %}
+                <button type="submit">Reproduce this run</button>
+            </form>
+        {% endif %}
+    </div>
+
+    <div class="grid-2">
+        <div class="panel">
+            <h2>Run configuration summary</h2>
+            <ul class="summary-list">
+                <li>Run ID from config: {{ verification.run_id_from_config|default:"-" }}</li>
+                <li>Run config path: {{ verification.run_config_path }}</li>
+                <li>Started UTC: {{ verification.started_utc|default:"-" }}</li>
+                <li>Finished UTC: {{ verification.finished_utc|default:"-" }}</li>
+                <li>Snapshot dir: {{ verification.snapshot_dir|default:"-" }}</li>
+                <li>Referenced input count: {{ verification.referenced_inputs|length }}</li>
+                <li>Generated output count: {{ verification.generated_outputs|length }}</li>
+            </ul>
+        </div>
+
+        <div class="panel">
+            <h2>Validation findings</h2>
+            {% if verification.problems %}
+                <ul class="plain-list">
+                    {% for problem in verification.problems %}
+                        <li>{{ problem }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="status-ok">No validation problems were found.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="grid-2">
+        <div class="panel">
+            <h2>Referenced inputs</h2>
+            {% if verification.referenced_inputs %}
+                <ul class="plain-list">
+                    {% for item in verification.referenced_inputs %}
+                        <li>
+                            <strong>{{ item.name }}</strong><br>
+                            path: <code>{{ item.path }}</code><br>
+                            size: {{ item.size_bytes }} bytes<br>
+                            sha256: <code>{{ item.sha256 }}</code>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="muted">No referenced inputs were recorded in the saved configuration.</p>
+            {% endif %}
+        </div>
+
+        <div class="panel">
+            <h2>Generated outputs in run_config.json</h2>
+            {% if verification.generated_outputs %}
+                <ul class="plain-list">
+                    {% for item in verification.generated_outputs %}
+                        <li>
+                            <strong>{{ item.name }}</strong><br>
+                            path: <code>{{ item.path }}</code><br>
+                            size: {{ item.size_bytes }} bytes
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="muted">No generated outputs were recorded.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
