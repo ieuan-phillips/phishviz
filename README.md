@@ -1,11 +1,22 @@
 # PhishViz
 
 **Local-first phishing simulation analytics and reporting workbench**
+
 **University of South Wales — BSc (Hons) Digital and Technology Solutions (Cyber Security), Capstone Project (2025–2026)**
 
 PhishViz is a Python and Django application for analysing CSV exports from **Microsoft Defender for Office 365 Attack Simulation Training (AST)**. It ingests and normalises results, pseudonymises direct identifiers, calculates aggregate behavioural metrics, creates charts and PDF reports, and records the information needed to verify or reproduce a run.
 
 The project provides both a command-line pipeline and a browser-based workflow running locally. It was developed as a university capstone project to explore repeatable phishing-simulation reporting, **not** as a production-ready or externally hosted security platform.
+
+## Screenshots
+
+### Analysis dashboard
+
+![PhishViz dashboard using synthetic data](screenshots/dashboard.png)
+
+### Generated PDF report
+
+![PhishViz PDF report preview](screenshots/report-preview.png)
 
 ## Features
 
